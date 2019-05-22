@@ -31,13 +31,13 @@ class vgg16(_fasterRCNN):
         print("Loading pretrained weights from %s" %(self.model_path))
         state_dict = torch.load(self.model_path)
         vgg.load_state_dict({k:v for k,v in state_dict.items() if k in vgg.state_dict()})
-
+    #not using the last liner layer
     vgg.classifier = nn.Sequential(*list(vgg.classifier._modules.values())[:-1])
 
     # not using the last maxpool layer
     self.RCNN_base = nn.Sequential(*list(vgg.features._modules.values())[:-1])
 
-    # Fix the layers before conv3:
+    # Fix the layers before conv3: model freeze
     for layer in range(10):
       for p in self.RCNN_base[layer].parameters(): p.requires_grad = False
 
